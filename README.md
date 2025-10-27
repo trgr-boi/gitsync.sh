@@ -21,3 +21,8 @@ REPO_DIRS(
 ```
 
 3. Use with `gitsync`
+
+## Todo
+
+- [ ] add a way to pull
+- [ ] parameter option for `pull`, `push` or `sync`
