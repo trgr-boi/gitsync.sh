@@ -1,29 +1,86 @@
 #!/bin/bash
-
-REPO_DIRS=(
-  "$HOME/Notes"
-  )
+# Usage:
+#   gitsync {pull|push|sync} {group}
+# Example:
+#   gitsync pull notes
+#   gitsync push dotfiles
+#   gitsync sync all
 
 set -e
 
-for REPO_DIR in "${REPO_DIRS[@]}"; do
+ACTION="$1"
+GROUP="$2"
 
-  # Check if the repo exists
+if [[ -z "$ACTION" || -z "$GROUP" ]]; then
+  echo "Usage: gitsync {pull|push} {group}"
+  echo "Groups: notes, dotfiles, all"
+  exit 1
+fi
+
+# ======== GROUPS =======
+NOTES_DIRS=(
+  "$HOME/Notes"
+)
+
+DOTFILES_DIRS=(
+  "$HOME/.dotfiles/main"
+  "$HOME/.dotfiles/nvim"
+  "$HOME/.dotfiles/fastfetch"
+)
+
+ALL_DIRS=("${NOTES_DIRS[@]}" "${DOTFILES_DIRS[@]}")
+
+# ======= Selection =======
+case "$GROUP" in
+  notes)
+    REPO_DIRS=("${NOTES_DIRS[@]}")
+    ;;
+  dotfiles)
+    REPO_DIRS=("${DOTFILES_DIRS[@]}")
+    ;;
+  all)
+    REPO_DIRS=("${ALL_DIRS[@]}")
+    ;;
+  *)
+    echo "Unknown group: $GROUP"
+    echo "Available groups: notes, dotfiles, all"
+    exit 1
+    ;;
+esac
+
+for REPO_DIR in "${REPO_DIRS[@]}"; do
+  echo
+  echo "==== Processing $(basename "$REPO_DIR") ===="
+
   if [ ! -d "$REPO_DIR/.git" ]; then
     echo "Error: $REPO_DIR is not a git repository."
-    echo
     continue
   fi
 
   cd "$REPO_DIR" || continue
 
-  default_message="Auto commit on $(date)"
-  read -rp "Commit message for $(basename "$REPO_DIR") (leave empty for default): " input_message
-  commit_message=${input_message:-$default_message}
-  echo "  Using commit message: \"$commit_message\""
+  case "$ACTION" in
+    pull)
+      echo "Pulling latest changes..."
+      git pull --rebase
+      ;;
 
-  git add .
-  git commit -m "$commit_message"
-  git push
+    push)
+      default_message="Auto commit on $(date)"
+      read -rp "Commit message for $(basename "$REPO_DIR") (leave empty for default): " input_message
+      commit_message=${input_message:-$default_message}
+      echo "Using commit message: \"$commit_message\""
 
+      git add .
+      git commit -m "$commit_message" || echo "No changes to commit."
+      git push
+      ;;
+
+    *)
+      echo "Unknown action: $ACTION"
+      echo "Usage: gitsync {pull|push} {group}"
+      exit 1
+      ;;
+  esac
 done
+

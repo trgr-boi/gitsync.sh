@@ -10,19 +10,32 @@ A simple script to auto sync a list of git directories.
 git clone https://github.com/trgr-boi/gitsync.sh && cp gitsync.sh/gitsync ~/.local/bin/
 ```
 
-2. Add your dirs in the `REPO_DIRS` list.
+2. Add directories and groups.
 
-```bash
-REPO_DIRS(
-  "$HOME/Notes"
-  "$HOME/Projects"
-  "..."
-)
-```
+- You first need to add a group, or add to the already existing groups.
+- To add a new directory to a existing group, just add a new line in the group list and add `"path/to/dir"`
+- To add a new group, make a new list like this:
 
-3. Use with `gitsync`
+  ```bash
+  NEW_GROUP_DIR=(
+    "path/to/dir"
+  )
+  ```
+
+- And add it to the `ALL_DIRS` variable:
+  ```bash
+  ALL_DIRS=("${NOTES_DIRS[@]}" "${DOTFILES_DIRS[@]}" "${NEW_GROUP_DIR[@]}")
+  ```
+
+3. Use with `gitsync {pull|push} {group}`
+
+## Guideline
+
+- When you start editing: `gitsync pull {group}`
+- when you are finished: `gitsync push {group}`
 
 ## Todo
 
-- [ ] add a way to pull
-- [ ] parameter option for `pull`, `push` or `sync`
+- [x] add a way to pull
+- [x] parameter option for `pull` or `push`
+- [x] select what you want to sync (groups?)
