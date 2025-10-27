@@ -1,0 +1,29 @@
+#!/bin/bash
+
+REPO_DIRS=(
+  "$HOME/Notes"
+  )
+
+set -e
+
+for REPO_DIR in "${REPO_DIRS[@]}"; do
+
+  # Check if the repo exists
+  if [ ! -d "$REPO_DIR/.git" ]; then
+    echo "Error: $REPO_DIR is not a git repository."
+    echo
+    continue
+  fi
+
+  cd "$REPO_DIR" || continue
+
+  default_message="Auto commit on $(date)"
+  read -rp "Commit message for $(basename "$REPO_DIR") (leave empty for default): " input_message
+  commit_message=${input_message:-$default_message}
+  echo "  Using commit message: \"$commit_message\""
+
+  git add .
+  git commit -m "$commit_message"
+  git push
+
+done
