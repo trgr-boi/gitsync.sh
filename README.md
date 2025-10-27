@@ -7,7 +7,7 @@ A simple script to auto sync a list of git directories.
 1. Clone repo and copy the script in your script dir.
 
 ```bash
-git clone
+git clone https://github.com/trgr-boi/gitsync.sh && cp gitsync.sh/gitsync ~/.local/bin/
 ```
 
 2. Add your dirs in the `REPO_DIRS` list.
@@ -20,4 +20,4 @@ REPO_DIRS(
 )
 ```
 
-2.
+3. Use with `gitsync`
